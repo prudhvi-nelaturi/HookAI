@@ -1,20 +1,34 @@
 import { useState } from 'react';
 import HomePage from './pages/HomePage';
 import ScriptPage from './pages/ScriptPage';
-import HistoryPage from './pages/HistoryPage';
+import PostedPage from './pages/PostedPage';
 
 const tabs = [
   { id: 'ideas', icon: '💡', label: 'Ideas' },
   { id: 'script', icon: '📝', label: 'Script' },
-  { id: 'history', icon: '📂', label: 'History' },
+  { id: 'posted', icon: '✅', label: 'Posted' },
 ];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('ideas');
   const [selectedIdea, setSelectedIdea] = useState(null);
+  const [usedTitles, setUsedTitles] = useState([]);
+  const [postedIdeas, setPostedIdeas] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('hookai_posted') || '[]'); } catch { return []; }
+  });
+
+  const markAsPosted = (idea) => {
+    setPostedIdeas(prev => {
+      if (prev.find(p => p.title === idea.title)) return prev;
+      const updated = [{ ...idea, postedAt: new Date().toISOString() }, ...prev];
+      localStorage.setItem('hookai_posted', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   const handleSelectIdea = (idea) => {
     setSelectedIdea(idea);
+    setUsedTitles(prev => prev.includes(idea.title) ? prev : [...prev, idea.title]);
     setActiveTab('script');
   };
 
@@ -36,9 +50,9 @@ export default function App() {
       </div>
 
       <div className="flex-1 overflow-y-auto pt-20">
-        {activeTab === 'ideas' && <HomePage onSelectIdea={handleSelectIdea} />}
-        {activeTab === 'script' && <ScriptPage idea={selectedIdea} onBack={() => setActiveTab('ideas')} />}
-        {activeTab === 'history' && <HistoryPage />}
+        {activeTab === 'ideas' && <HomePage onSelectIdea={handleSelectIdea} usedTitles={usedTitles} />}
+        {activeTab === 'script' && <ScriptPage idea={selectedIdea} onBack={() => setActiveTab('ideas')} onMarkPosted={markAsPosted} postedTitles={postedIdeas.map(p => p.title)} />}
+        {activeTab === 'posted' && <PostedPage postedIdeas={postedIdeas} />}
       </div>
     </div>
   );

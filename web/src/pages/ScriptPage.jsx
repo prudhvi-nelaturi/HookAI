@@ -23,7 +23,7 @@ function Section({ title, content, highlight }) {
   );
 }
 
-export default function ScriptPage({ idea, onBack }) {
+export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = [] }) {
   const [script, setScript] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -46,9 +46,21 @@ export default function ScriptPage({ idea, onBack }) {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <button onClick={onBack} className="text-gray-500 hover:text-white text-sm mb-6 flex items-center gap-1 transition-colors">
-        ← Back to ideas
-      </button>
+      <div className="flex items-center justify-between mb-6">
+        <button onClick={onBack} className="text-gray-500 hover:text-white text-sm flex items-center gap-1 transition-colors">
+          ← Back to ideas
+        </button>
+        {idea && (
+          postedTitles.includes(idea.title)
+            ? <span className="text-green-500 text-sm font-bold">✅ Posted</span>
+            : <button
+                onClick={() => onMarkPosted(idea)}
+                className="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+              >
+                ✅ Mark as Posted
+              </button>
+        )}
+      </div>
 
       <h2 className="text-white font-black text-xl mb-6">{idea.title}</h2>
 

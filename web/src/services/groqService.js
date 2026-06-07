@@ -19,13 +19,21 @@ const ask = async (prompt) => {
   return response.data.choices[0].message.content;
 };
 
-export const generateIdeas = async () => {
-  const prompt = `Generate 5 viral faceless video ideas for YouTube Shorts and Instagram Reels.
+export const generateIdeas = async (excludeTitles = []) => {
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const excludeBlock = excludeTitles.length > 0
+    ? `\n\nDo NOT generate ideas with these titles or similar topics (already generated):\n${excludeTitles.map(t => `- ${t}`).join('\n')}`
+    : '';
+
+  const prompt = `Today is ${today}. Generate 5 fresh viral faceless video ideas for YouTube Shorts and Instagram Reels.
+
 Requirements:
-- Mass appeal (any age, gender, country)
-- Faceless format — voiceover + visuals only, no camera needed
-- Hook must stop the scroll in the first 3 seconds
-- Short, punchy, high curiosity gap
+- Mass appeal — any age, gender, country can watch and enjoy
+- Faceless format — voiceover + visuals only, no camera or face needed
+- Hook must stop the scroll in the first 3 seconds — shocking, curiosity-triggering, or unbelievable
+- Topics: mysteries, wild facts, untold stories, mind-blowing science, bizarre history, satisfying compilations
+- Avoid generic self-help, motivation, or fitness content
+- Make titles feel urgent and specific, not vague${excludeBlock}
 
 Return ONLY a valid JSON array, no explanation, no markdown:
 [
@@ -36,6 +44,7 @@ Return ONLY a valid JSON array, no explanation, no markdown:
     "duration": "30s | 60s | 90s"
   }
 ]`;
+
   try {
     const text = await ask(prompt);
     const json = text.match(/\[[\s\S]*\]/)?.[0];
