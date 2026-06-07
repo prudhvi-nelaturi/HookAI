@@ -79,6 +79,27 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
           <Section title="🎵 MUSIC VIBE" content={script.music} />
           <Section title="✏️ CAPTION" content={script.caption} />
           <Section title="#️⃣ HASHTAGS" content={script.hashtags} />
+
+          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
+            <p className="text-xs font-bold text-red-500 mb-3">🔗 RESOURCES — Find Your Visuals</p>
+            <div className="space-y-2">
+              {[
+                { label: '🎬 Pexels', desc: 'Free stock video footage', url: `https://www.pexels.com/search/videos/${encodeURIComponent(idea.title)}/` },
+                { label: '🖼️ Pixabay', desc: 'Free images & videos', url: `https://pixabay.com/videos/search/${encodeURIComponent(idea.title)}/` },
+                { label: '✂️ CapCut', desc: 'Edit + AI voiceover + captions', url: 'https://www.capcut.com' },
+                { label: '🎵 YouTube Audio Library', desc: 'Free background music', url: 'https://www.youtube.com/audiolibrary' },
+              ].map(({ label, desc, url }) => (
+                <a key={label} href={url} target="_blank" rel="noreferrer"
+                  className="flex justify-between items-center py-2 border-b border-[#2A2A2A] last:border-0 hover:opacity-70 transition-opacity">
+                  <div>
+                    <span className="text-white text-sm font-semibold">{label}</span>
+                    <span className="text-gray-500 text-xs ml-2">{desc}</span>
+                  </div>
+                  <span className="text-gray-600 text-xs">→</span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
