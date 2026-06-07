@@ -72,7 +72,14 @@ Return ONLY a valid JSON object, no explanation, no markdown:
   "visuals": "shot-by-shot visual instructions as bullet points",
   "music": "music vibe and energy description",
   "caption": "Instagram/YouTube caption optimized for engagement",
-  "hashtags": "10-15 relevant hashtags"
+  "hashtags": "10-15 relevant hashtags",
+  "resources": [
+    {
+      "site": "site name e.g. Pexels, Pixabay, NASA Image Library, YouTube, Freepik, Mixkit",
+      "url": "direct search URL for this topic",
+      "tip": "exactly what to search or look for on this site for this specific video"
+    }
+  ]
 }`;
   const text = await ask(prompt);
   const json = text.match(/\{[\s\S]*\}/)?.[0];
