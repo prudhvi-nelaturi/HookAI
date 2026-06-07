@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { generateIdeas } from '../services/groqService';
 
 export default function HomePage({ onSelectIdea, usedTitles }) {
-  const [pool, setPool] = useState([]);
+  const [pool, setPool] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('hookai_pool') || '[]'); } catch { return []; }
+  });
   const [loading, setLoading] = useState(false);
 
   const fetchIdeas = async () => {
@@ -10,7 +12,11 @@ export default function HomePage({ onSelectIdea, usedTitles }) {
     try {
       const allTitles = pool.map(i => i.title);
       const newIdeas = await generateIdeas(allTitles);
-      setPool(prev => [...prev, ...newIdeas]);
+      setPool(prev => {
+        const updated = [...prev, ...newIdeas];
+        localStorage.setItem('hookai_pool', JSON.stringify(updated));
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
