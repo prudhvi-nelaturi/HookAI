@@ -80,11 +80,27 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
           <Section title="✏️ CAPTION" content={script.caption} />
           <Section title="#️⃣ HASHTAGS" content={script.hashtags} />
 
-          {script.resources?.length > 0 && (
-            <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
+          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
               <p className="text-xs font-bold text-red-500 mb-3">🔗 RESOURCES — Where to Find Your Media</p>
               <div className="space-y-3">
-                {script.resources.map((r, i) => (
+                {script.resources?.map((r, i) => (
+                  <a key={i} href={r.url} target="_blank" rel="noreferrer"
+                    className="block py-2 border-b border-[#2A2A2A] hover:opacity-70 transition-opacity">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-white text-sm font-semibold">{r.site}</span>
+                      <span className="text-gray-600 text-xs">→</span>
+                    </div>
+                    <p className="text-gray-500 text-xs leading-relaxed">{r.tip}</p>
+                  </a>
+                ))}
+
+                <p className="text-xs font-bold text-gray-600 pt-1 pb-1">TOOLS — Always Useful</p>
+                {[
+                  { site: '✂️ CapCut', tip: 'Edit video, add AI voiceover, auto-captions, background music', url: 'https://www.capcut.com' },
+                  { site: '🎵 YouTube Audio Library', tip: 'Free licensed background music for any video', url: 'https://www.youtube.com/audiolibrary' },
+                  { site: '🤖 ElevenLabs', tip: 'AI voiceover — generate realistic narration from your script', url: 'https://elevenlabs.io' },
+                  { site: '🎨 Canva', tip: 'Create text overlays, thumbnails, and title cards', url: 'https://www.canva.com' },
+                ].map((r, i) => (
                   <a key={i} href={r.url} target="_blank" rel="noreferrer"
                     className="block py-2 border-b border-[#2A2A2A] last:border-0 hover:opacity-70 transition-opacity">
                     <div className="flex justify-between items-center mb-1">
@@ -96,7 +112,6 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
                 ))}
               </div>
             </div>
-          )}
         </div>
       )}
     </div>
