@@ -3,6 +3,15 @@ import { generateScript } from '../services/groqService';
 import { searchVideos } from '../services/pexelsService';
 import { generateVoiceover, VOICES } from '../services/elevenLabsService';
 
+// Normalize hashtags from any AI format (#a#b, "a, b", "a b") into clean "#a #b #c".
+function formatHashtags(raw) {
+  return String(raw || '')
+    .split(/[\s,#]+/)
+    .filter(Boolean)
+    .map((t) => `#${t}`)
+    .join(' ');
+}
+
 function Voiceover({ script }) {
   const [voiceId, setVoiceId] = useState(VOICES[0].id);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -212,7 +221,7 @@ function Section({ title, content, highlight }) {
           {copied ? '✅ Copied' : 'Copy'}
         </button>
       </div>
-      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{content}</p>
+      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line break-words">{content}</p>
     </div>
   );
 }
@@ -274,7 +283,7 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
           <PexelsSearch defaultQuery={script.searchQuery || idea.title} />
           <Section title="🎵 MUSIC VIBE" content={script.music} />
           <Section title="✏️ CAPTION" content={script.caption} />
-          <Section title="#️⃣ HASHTAGS" content={script.hashtags} />
+          <Section title="#️⃣ HASHTAGS" content={formatHashtags(script.hashtags)} />
 
           {script.thumbnails?.length > 0 && (
             <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
