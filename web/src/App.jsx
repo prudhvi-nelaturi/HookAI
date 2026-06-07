@@ -40,7 +40,7 @@ export default function App() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
-              activeTab === tab.id ? 'text-red-500' : 'text-gray-600'
+              activeTab === tab.id ? 'text-insta' : 'text-gray-600'
             }`}
           >
             <span className="text-xl">{tab.icon}</span>

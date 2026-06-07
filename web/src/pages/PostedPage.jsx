@@ -20,7 +20,7 @@ export default function PostedPage({ postedIdeas }) {
         {postedIdeas.map((idea, index) => (
           <div key={index} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
             <div className="flex justify-between items-start mb-1">
-              <div className="text-xs font-bold text-green-500">{idea.format} · {idea.duration}</div>
+              <div className="text-xs font-bold text-insta">{idea.format} · {idea.duration}</div>
               <div className="text-xs text-gray-600">
                 {new Date(idea.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </div>

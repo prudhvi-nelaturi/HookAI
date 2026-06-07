@@ -2,7 +2,15 @@
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        insta: {
+          DEFAULT: '#C13584',
+          dark: '#833AB4',
+          light: '#E1306C',
+        },
+      },
+    },
   },
   plugins: [],
 }

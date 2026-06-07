@@ -25,14 +25,17 @@ export default function HomePage({ onSelectIdea, usedTitles }) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-white">HookAI <span className="text-red-500">⚡</span></h1>
+        <h1 className="text-3xl font-black">
+          <span className="bg-gradient-to-r from-[#833AB4] via-[#C13584] to-[#E1306C] bg-clip-text text-transparent">HookAI</span>
+          <span className="text-white"> ⚡</span>
+        </h1>
         <p className="text-gray-500 text-sm mt-1">Your daily viral faceless content engine</p>
       </div>
 
       <button
         onClick={fetchIdeas}
         disabled={loading}
-        className="w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-base transition-all mb-6"
+        className="w-full bg-insta hover:bg-insta-light disabled:opacity-50 text-white font-bold py-4 rounded-xl text-base transition-all mb-6"
       >
         {loading ? 'Generating ideas...' : pool.length === 0 ? '⚡ Generate Today\'s Ideas' : '⚡ Generate 5 More'}
       </button>
@@ -54,11 +57,11 @@ export default function HomePage({ onSelectIdea, usedTitles }) {
               className={`w-full text-left border rounded-xl p-4 transition-all ${
                 used
                   ? 'bg-[#111] border-[#222] opacity-50'
-                  : 'bg-[#1A1A1A] hover:bg-[#222] border-[#2A2A2A] hover:border-red-500'
+                  : 'bg-[#1A1A1A] hover:bg-[#222] border-[#2A2A2A] hover:border-insta'
               }`}
             >
               <div className="flex justify-between items-start mb-1">
-                <div className="text-xs font-bold text-red-500">#{index + 1} · {idea.format} · {idea.duration}</div>
+                <div className="text-xs font-bold text-insta">#{index + 1} · {idea.format} · {idea.duration}</div>
                 {used && <span className="text-xs text-gray-600 font-semibold">USED</span>}
               </div>
               <div className="text-white font-bold text-base mb-2">{idea.title}</div>

@@ -70,6 +70,7 @@ Return ONLY a valid JSON object, no explanation, no markdown:
   "hook": "exact words for first 3 seconds — must be shocking or curiosity-triggering",
   "script": "full voiceover script with timestamps e.g. [0-3s], [3-15s]",
   "visuals": "shot-by-shot visual instructions as bullet points",
+  "searchQuery": "2-3 word generic stock-footage search term for this topic (e.g. 'outer space', 'ocean waves') — simple keywords that will return results on Pexels, NOT the clickbait title",
   "music": "music vibe and energy description",
   "caption": "Instagram/YouTube caption optimized for engagement",
   "hashtags": "10-15 relevant hashtags",
@@ -79,6 +80,11 @@ Return ONLY a valid JSON object, no explanation, no markdown:
       "url": "direct search URL for this topic",
       "tip": "exactly what to search or look for on this site for this specific video"
     }
+  ],
+  "thumbnails": [
+    "thumbnail concept 1 — describe the image, text overlay, and color scheme",
+    "thumbnail concept 2",
+    "thumbnail concept 3"
   ]
 }`;
   const text = await ask(prompt);
