@@ -51,10 +51,24 @@ _Last updated: 2026-06-06_
 
 - [x] Script prompt enforces FACTUAL accuracy (no fabricated/sci-fi claims)
 - [x] Script prompt enforces stock-footage-friendly visuals only
-- [x] Scripts now return timed segments (narration + visual + per-beat search term)
+- [x] Scripts return timed segments (narration + visual + per-beat search term)
 - [x] Storyboard UI: each beat auto-loads relevant footage + refine search
 - [x] Ideas nudged toward true, visualizable topics
 - [x] Hashtags overflow fix (normalizer + break-words)
+
+---
+
+## Phase 3.6 — Pivot to Text-Driven Format ✅ DONE
+
+Realized stock footage can't compellingly visualize arbitrary topics; the
+visuals were the weak link. Pivoted to the text-driven format (captions over a
+reusable engaging background) which decouples visuals from topic.
+
+- [x] Ideas optimized for gripping spoken stories (no footage constraint)
+- [x] Scripts written caption-first (one punchy line per on-screen caption)
+- [x] AI suggests background vibes + a Pexels background search term
+- [x] BackgroundFootage picker: AI suggestions + satisfying-loop presets + Pexels grid + no-copyright gameplay links
+- [x] CapCut export updated for new structure
 
 ---
 

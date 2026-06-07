@@ -24,24 +24,33 @@ HookAI removes all three blockers. Open the app, get today's ideas, pick one, ge
 
 ---
 
-## Content Philosophy
+## Content Philosophy — Text-Driven Format
 
-- **Faceless** — no on-camera presence required, voiceover + stock footage only
+HookAI produces **text-driven** faceless videos: a voiceover reads a gripping script, **bold animated captions** appear on screen, all over a **reusable engaging background** (satisfying loops or no-copyright gameplay).
+
+Why this format: free stock footage can't compellingly visualize arbitrary topics — and for faceless content the visuals are what hold viewers. Decoupling visuals from topic means:
+- The **hook + story + captions** carry the video (where the value actually is)
+- Any topic works — no footage-availability constraint
+- The same backgrounds are **reused across every video** → brutally consistent output
+
+Principles:
+- **Faceless** — no camera, voiceover + captions only
 - **Mass appeal** — any age, gender, country
-- **Hook-first** — first 3 seconds engineered to stop the scroll
-- **Formats:** Compilations, Facts, Reddit-style Stories
+- **Hook-first** — the first line must stop the scroll
+- **Retention-built** — short punchy lines, curiosity that pays off
+- **Factually accurate** — true stories/facts only, no fabricated claims
 - **Theme:** Instagram-inspired purple-pink (`#C13584` / `#833AB4` / `#E1306C`)
 
 ---
 
 ## The In-App Production Loop
 
-1. 💡 **Ideas** — AI generates 5 fresh viral faceless ideas (dedupes against past ideas, injects today's date)
-2. 📝 **Script** — full script with timestamps, hook, visuals, music vibe, caption, hashtags, thumbnail ideas
+1. 💡 **Ideas** — AI generates gripping, true, spoken-story ideas (dedupes against past ideas, injects today's date)
+2. 📝 **Script** — caption-friendly script (one punchy line per on-screen caption) + hook, music vibe, caption, hashtags, thumbnails
 3. 🎙️ **AI Voiceover** — pick a voice, generate narration, play and download MP3 (ElevenLabs)
-4. 🎥 **Stock footage** — inline Pexels vertical video search (auto-filled with a clean topic query), direct download
+4. 🎮 **Background** — pick ONE engaging loop: AI suggestions + satisfying-loop presets (Pexels) + no-copyright gameplay links (YouTube)
 5. 📋 **CapCut export** — one-click copy of the full formatted script
-6. 🔗 **Resources** — AI-suggested topic-specific media sources + always-useful tools
+6. 🔗 **Resources** — AI-suggested media sources + always-useful tools
 7. ✅ **Posted** — mark and track which ideas you actually published
 
 ---
