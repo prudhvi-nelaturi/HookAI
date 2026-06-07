@@ -1,17 +1,8 @@
 import axios from 'axios';
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-
-const client = axios.create({
-  baseURL: '/groq/openai/v1',
-  headers: {
-    Authorization: `Bearer ${GROQ_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-});
-
+// Keys are injected server-side by the Vite proxy (see vite.config.js).
 const ask = async (prompt) => {
-  const response = await client.post('/chat/completions', {
+  const response = await axios.post('/api/groq', {
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.9,

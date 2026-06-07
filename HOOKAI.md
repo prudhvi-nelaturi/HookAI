@@ -1,6 +1,8 @@
 # HookAI
 
-A personal AI-powered faceless content engine that generates viral video ideas, full scripts, and production instructions for YouTube Shorts and Instagram Reels — no camera, no editing skills required.
+A personal AI-powered faceless content engine that generates viral video ideas, full scripts, AI voiceovers, and stock footage for YouTube Shorts and Instagram Reels — no camera, no editing skills required.
+
+> **Status (2026-06-06):** Web app MVP is live and working end-to-end. Ideas → script → AI voiceover → stock footage → CapCut export → posted tracking, all inside the app.
 
 ---
 
@@ -11,7 +13,7 @@ Content creation is hard not because of recording or editing — it's hard becau
 - Not knowing how to hook viewers in the first 3 seconds
 - Losing consistency because ideation is exhausting
 
-HookAI removes all three blockers. Open the app, get today's ideas, pick one, get a full production-ready script, record, post.
+HookAI removes all three blockers. Open the app, get today's ideas, pick one, get a full production-ready script with voiceover and footage, post.
 
 ---
 
@@ -24,33 +26,51 @@ HookAI removes all three blockers. Open the app, get today's ideas, pick one, ge
 
 ## Content Philosophy
 
-- **Faceless** — no on-camera presence required
+- **Faceless** — no on-camera presence required, voiceover + stock footage only
 - **Mass appeal** — any age, gender, country
 - **Hook-first** — first 3 seconds engineered to stop the scroll
-- **MrBeast-inspired structure** — hook → escalation → payoff
-- **Formats:** Compilations, Facts, Reddit Stories, Voiceover + Visuals
+- **Formats:** Compilations, Facts, Reddit-style Stories
+- **Theme:** Instagram-inspired purple-pink (`#C13584` / `#833AB4` / `#E1306C`)
+
+---
+
+## The In-App Production Loop
+
+1. 💡 **Ideas** — AI generates 5 fresh viral faceless ideas (dedupes against past ideas, injects today's date)
+2. 📝 **Script** — full script with timestamps, hook, visuals, music vibe, caption, hashtags, thumbnail ideas
+3. 🎙️ **AI Voiceover** — pick a voice, generate narration, play and download MP3 (ElevenLabs)
+4. 🎥 **Stock footage** — inline Pexels vertical video search (auto-filled with a clean topic query), direct download
+5. 📋 **CapCut export** — one-click copy of the full formatted script
+6. 🔗 **Resources** — AI-suggested topic-specific media sources + always-useful tools
+7. ✅ **Posted** — mark and track which ideas you actually published
 
 ---
 
 ## Architecture
 
 ```
-HookAI (React Native - Mobile)
-    └── src/
-        ├── screens/
-        │   ├── HomeScreen.js       # Daily idea generation
-        │   ├── ScriptScreen.js     # Full script view
-        │   └── HistoryScreen.js    # Saved scripts (coming soon)
-        ├── navigation/
-        │   └── AppNavigator.js     # Bottom tab navigation
-        ├── services/
-        │   └── claudeService.js    # Claude API integration
-        └── constants/
-            └── colors.js           # Design tokens
-
-HookAI Web (React + Tailwind - planned)
-    └── Mirrors mobile features, accessible via phone browser
+HookAI/
+├── web/                         # Live web app (Vite + React + Tailwind)
+│   ├── src/
+│   │   ├── App.jsx              # Tab nav: Ideas / Script / Posted
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx     # Idea generation + pool (localStorage)
+│   │   │   ├── ScriptPage.jsx   # Script + Voiceover + Pexels + CapCut + resources
+│   │   │   └── PostedPage.jsx   # Posted video tracker
+│   │   └── services/
+│   │       ├── groqService.js   # AI ideas + scripts (calls /api/groq)
+│   │       ├── pexelsService.js # Stock video search (calls /api/pexels)
+│   │       └── elevenLabsService.js # AI voiceover (calls /api/elevenlabs)
+│   ├── vite.config.js          # Server-side API proxy — injects keys, hides them from bundle
+│   └── .env                    # Server-only keys (gitignored, no VITE_ prefix)
+│
+└── mobile/                      # React Native (Expo) — parked for future, not active
 ```
+
+### Key security design
+API keys (Groq, Pexels, ElevenLabs) live in `.env` **without** the `VITE_` prefix, so they are never bundled into the browser. The Vite dev server (`vite.config.js`) runs a server-side proxy that injects the keys into outgoing requests. The frontend only ever calls `/api/groq`, `/api/pexels`, `/api/elevenlabs` — no keys reach the client. Verified: a production build contains none of the keys.
+
+> **Deploy note:** The proxy currently lives in the Vite dev server. When deploying to a public URL, replicate these three endpoints as serverless functions (Vercel/Netlify `/api`) or a small Node server, reading the same env vars. The frontend code does not change.
 
 ---
 
@@ -58,57 +78,47 @@ HookAI Web (React + Tailwind - planned)
 
 | Layer | Technology |
 |---|---|
-| Mobile App | React Native (Expo Go) |
-| Web App | React + Tailwind CSS (planned) |
-| AI Engine | Claude API (claude-haiku) |
-| Backend | Spring Boot (planned — for history, auth, saved scripts) |
-| Database | PostgreSQL (planned) |
-| Hosting | Railway / Render free tier |
+| Web App | React + Vite + Tailwind CSS v3 |
+| AI Engine | Groq API (`llama-3.3-70b-versatile`) — free |
+| Voiceover | ElevenLabs API (free tier, 10k credits/mo) |
+| Stock footage | Pexels API (free, 200 req/hr) |
+| API proxy | Vite dev-server middleware (keys server-side) |
+| Storage | Browser localStorage (idea pool, posted videos) |
+| Mobile (parked) | React Native (Expo Go) |
+| Backend (future) | Serverless functions for prod proxy + persistence |
 
 ---
 
-## Features
+## Running Locally
 
-### MVP (Phase 1)
-- [x] Project scaffold (React Native + Expo)
-- [ ] Daily idea generation (5 ideas/day via Claude API)
-- [ ] Full script generation per idea (hook, script, visuals, music, caption, hashtags)
-- [ ] Dark mode UI with clean design
-- [ ] Web app version (React + Tailwind)
+```bash
+cd web
+npm install
+npm run dev          # http://localhost:5173 (also exposed on LAN for phone testing)
+```
 
-### Phase 2
-- [ ] Claude API integration (replace mock data)
-- [ ] Save/bookmark scripts
-- [ ] History screen (view past scripts)
-- [ ] Copy to clipboard per section
+Requires `web/.env` with:
+```
+GROQ_API_KEY=...
+PEXELS_API_KEY=...
+ELEVENLABS_API_KEY=...
+```
 
-### Phase 3
-- [ ] Backend (Spring Boot) for persistent storage
-- [ ] User accounts
-- [ ] Push notifications ("Your daily ideas are ready")
-- [ ] Analytics (track which ideas you used, post performance)
+---
 
-### Phase 4 (if monetized)
-- [ ] Open to other creators ($9–19/month)
-- [ ] Custom niche settings
-- [ ] Trend detection (pull from trending topics)
+## Free-Tier Limits
+
+| Service | Free limit |
+|---|---|
+| Groq | Generous rate limits, free |
+| ElevenLabs | 10,000 credits/mo (~10 min audio, ~15 voiceovers) |
+| Pexels | 200 requests/hour |
 
 ---
 
 ## Monetization Plan
 
-- **Phase 1–2:** Personal use only — build audience on YouTube/Reels
-- **Phase 3+:** Open to creators if audience validates the tool
+- **Now:** Personal use only — build an audience on YouTube/Reels first
+- **Later:** Open to creators if the audience validates the tool
 - **Income routing:** Through India (family entity) to avoid OPT complications
 - **Never block earnings** — if visa is an issue, route smartly, never stop
-
----
-
-## Cost Structure
-
-| Item | Cost |
-|---|---|
-| Claude API (Haiku) | ~$2–5/month |
-| Backend hosting | $0 (Railway/Render free tier) |
-| Domain (future) | ~$12/year |
-| **Total** | **~$2–5/month** |

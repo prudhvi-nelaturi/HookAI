@@ -1,14 +1,8 @@
 import axios from 'axios';
 
-const PEXELS_API_KEY = import.meta.env.VITE_PEXELS_API_KEY;
-
-const client = axios.create({
-  baseURL: 'https://api.pexels.com',
-  headers: { Authorization: PEXELS_API_KEY },
-});
-
+// Keys are injected server-side by the Vite proxy (see vite.config.js).
 export async function searchVideos(query, perPage = 9) {
-  const { data } = await client.get('/videos/search', {
+  const { data } = await axios.get('/api/pexels', {
     params: { query, per_page: perPage, orientation: 'portrait' },
   });
   return data.videos.map((v) => {
