@@ -122,11 +122,13 @@ function PexelsSearch({ defaultQuery }) {
               ) : (
                 <>
                   <img src={v.preview} alt="" className="w-full h-32 object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-1">
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
                     <button onClick={() => setPlayingId(v.id)}
                       className="text-white text-2xl leading-none hover:scale-110 transition-transform">▶</button>
                     <a href={v.downloadUrl} target="_blank" rel="noreferrer" download
                       className="text-insta text-xs font-bold">⬇ Download</a>
+                    <a href={v.pageUrl} target="_blank" rel="noreferrer"
+                      className="text-gray-300 text-[10px]">View on Pexels</a>
                   </div>
                   <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">{v.duration}s</span>
                 </>
