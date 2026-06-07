@@ -47,6 +47,17 @@ _Last updated: 2026-06-06_
 
 ---
 
+## Phase 3.5 — Content Quality & Footage Relevance ✅ DONE
+
+- [x] Script prompt enforces FACTUAL accuracy (no fabricated/sci-fi claims)
+- [x] Script prompt enforces stock-footage-friendly visuals only
+- [x] Scripts now return timed segments (narration + visual + per-beat search term)
+- [x] Storyboard UI: each beat auto-loads relevant footage + refine search
+- [x] Ideas nudged toward true, visualizable topics
+- [x] Hashtags overflow fix (normalizer + break-words)
+
+---
+
 ## Phase 4 — Polish 📌 Planned
 
 - [ ] Loading skeletons instead of spinners
