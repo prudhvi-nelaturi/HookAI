@@ -12,15 +12,8 @@ function formatHashtags(raw) {
     .join(' ');
 }
 
-// Derive the full narration text from timed segments.
-function fullScriptText(segments = []) {
-  return segments.map((s) => `[${s.time}] ${s.narration}`).join(' ');
-}
-
-// Derive shot-by-shot visuals from timed segments.
-function visualsText(segments = []) {
-  return segments.map((s) => `[${s.time}] ${s.visual}`).join('\n');
-}
+// Preset reusable satisfying/abstract background loops that exist on Pexels.
+const BG_PRESETS = ['satisfying', 'ink water', 'fluid art', 'kinetic sand', 'slime', 'lava lamp', 'particles', 'neon lights', 'aerial nature'];
 
 function Voiceover({ script }) {
   const [voiceId, setVoiceId] = useState(VOICES[0].id);
@@ -111,14 +104,16 @@ function ClipGrid({ clips }) {
   );
 }
 
-// One beat of the video: narration + suggested visual + auto-loaded relevant footage.
-function SegmentFootage({ index, time, narration, visual, search }) {
-  const [query, setQuery] = useState(search || '');
+// Background picker for the text-driven format: pick ONE engaging loop to run
+// behind the captions. It does NOT need to match the topic — it just holds attention.
+function BackgroundFootage({ suggestions = [], defaultSearch }) {
+  const [query, setQuery] = useState(defaultSearch || 'satisfying');
   const [clips, setClips] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const load = async (q) => {
     if (!q.trim()) return;
+    setQuery(q);
     setLoading(true);
     try {
       setClips(await searchVideos(q.trim(), 6));
@@ -129,26 +124,46 @@ function SegmentFootage({ index, time, narration, visual, search }) {
     }
   };
 
-  useEffect(() => {
-    setQuery(search || '');
-    if (search) load(search);
-    else setLoading(false);
-  }, [search]);
+  useEffect(() => { load(defaultSearch || 'satisfying'); }, [defaultSearch]);
+
+  const ytSearch = (term) => `https://www.youtube.com/results?search_query=${encodeURIComponent(term + ' no copyright gameplay 9:16')}`;
 
   return (
     <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-insta font-bold text-xs shrink-0">#{index + 1}</span>
-        <span className="text-gray-500 text-xs font-mono">{time}</span>
+      <p className="text-xs font-bold text-insta mb-1">🎮 BACKGROUND — Keep Eyes on Screen</p>
+      <p className="text-gray-500 text-xs mb-3">Text-driven format: bold captions over one engaging loop. The background does NOT need to match the topic — it just stops people scrolling. Pick one and loop it for the whole video.</p>
+
+      {suggestions.length > 0 && (
+        <div className="mb-3">
+          <p className="text-[10px] font-bold text-gray-600 mb-1">AI SUGGESTIONS FOR THIS VIDEO</p>
+          <div className="flex flex-wrap gap-1.5">
+            {suggestions.map((s, i) => (
+              <button key={i} onClick={() => load(s)}
+                className="bg-[#0A0A0A] border border-[#2A2A2A] hover:border-insta text-gray-300 text-xs px-2.5 py-1 rounded-full transition-colors">
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <p className="text-[10px] font-bold text-gray-600 mb-1">SATISFYING LOOPS (free on Pexels)</p>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {BG_PRESETS.map((p) => (
+          <button key={p} onClick={() => load(p)}
+            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+              query === p ? 'bg-insta border-insta text-white' : 'bg-[#0A0A0A] border-[#2A2A2A] hover:border-insta text-gray-300'
+            }`}>
+            {p}
+          </button>
+        ))}
       </div>
-      <p className="text-gray-200 text-sm leading-relaxed mb-1">{narration}</p>
-      {visual && <p className="text-gray-500 text-xs mb-3">🎬 {visual}</p>}
 
       <form onSubmit={(e) => { e.preventDefault(); load(query); }} className="flex gap-2 mb-3">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Refine footage search..."
+          placeholder="Search background loops..."
           className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-insta"
         />
         <button type="submit" disabled={loading}
@@ -158,24 +173,25 @@ function SegmentFootage({ index, time, narration, visual, search }) {
       </form>
 
       {loading ? (
-        <p className="text-gray-600 text-xs text-center py-4 animate-pulse">Finding footage…</p>
+        <p className="text-gray-600 text-xs text-center py-4 animate-pulse">Finding backgrounds…</p>
       ) : clips.length === 0 ? (
-        <p className="text-gray-600 text-xs text-center py-4">No clips found. Try a simpler search term.</p>
+        <p className="text-gray-600 text-xs text-center py-4">No clips found. Try another term.</p>
       ) : (
         <ClipGrid clips={clips} />
       )}
-    </div>
-  );
-}
 
-// The per-beat storyboard: each segment shows narration + matched footage.
-function Storyboard({ segments }) {
-  return (
-    <div className="space-y-3">
-      <p className="text-xs font-bold text-insta px-1">🎬 STORYBOARD — Footage Matched to Each Beat</p>
-      {segments.map((s, i) => (
-        <SegmentFootage key={`${i}-${s.search}`} index={i} time={s.time} narration={s.narration} visual={s.visual} search={s.search} />
-      ))}
+      <div className="mt-3 pt-3 border-t border-[#2A2A2A]">
+        <p className="text-[10px] font-bold text-gray-600 mb-1">PREFER GAMEPLAY? (Minecraft parkour, Subway Surfers — the classic combo)</p>
+        <div className="flex flex-wrap gap-1.5">
+          {['Minecraft parkour', 'Subway Surfers', 'GTA driving', 'satisfying ASMR'].map((g) => (
+            <a key={g} href={ytSearch(g)} target="_blank" rel="noreferrer"
+              className="bg-[#0A0A0A] border border-[#2A2A2A] hover:border-insta text-gray-300 text-xs px-2.5 py-1 rounded-full transition-colors">
+              {g} ↗
+            </a>
+          ))}
+        </div>
+        <p className="text-gray-600 text-[10px] mt-2">Download no-copyright gameplay from YouTube, then loop it behind your captions.</p>
+      </div>
     </div>
   );
 }
@@ -192,14 +208,14 @@ function CapCutExport({ idea, script }) {
 ${script.hook}
 
 ━━━━━━━━━━━━━━━━━━━━
-📖 VOICEOVER SCRIPT
+📖 VOICEOVER SCRIPT (each line = one caption)
 ━━━━━━━━━━━━━━━━━━━━
-${fullScriptText(script.segments)}
+${script.script}
 
 ━━━━━━━━━━━━━━━━━━━━
-🎬 VISUALS (Shot by shot)
+🎮 BACKGROUND IDEAS
 ━━━━━━━━━━━━━━━━━━━━
-${visualsText(script.segments)}
+${(script.backgrounds || []).join('\n')}
 
 ━━━━━━━━━━━━━━━━━━━━
 🎵 MUSIC VIBE
@@ -307,9 +323,9 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
       {script && (
         <div className="space-y-3">
           <Section title="🎣 HOOK — First 3 Seconds" content={script.hook} highlight />
-          <Section title="📖 FULL SCRIPT" content={fullScriptText(script.segments)} />
-          <Voiceover script={fullScriptText(script.segments)} />
-          <Storyboard segments={script.segments || []} />
+          <Section title="📖 FULL SCRIPT — Each line = one caption" content={script.script} />
+          <Voiceover script={script.script} />
+          <BackgroundFootage suggestions={script.backgrounds || []} defaultSearch={script.bgSearch} />
           <Section title="🎵 MUSIC VIBE" content={script.music} />
           <Section title="✏️ CAPTION" content={script.caption} />
           <Section title="#️⃣ HASHTAGS" content={formatHashtags(script.hashtags)} />
