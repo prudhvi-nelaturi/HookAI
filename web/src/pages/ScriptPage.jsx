@@ -12,6 +12,16 @@ function formatHashtags(raw) {
     .join(' ');
 }
 
+// Derive the full narration text from timed segments.
+function fullScriptText(segments = []) {
+  return segments.map((s) => `[${s.time}] ${s.narration}`).join(' ');
+}
+
+// Derive shot-by-shot visuals from timed segments.
+function visualsText(segments = []) {
+  return segments.map((s) => `[${s.time}] ${s.visual}`).join('\n');
+}
+
 function Voiceover({ script }) {
   const [voiceId, setVoiceId] = useState(VOICES[0].id);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -71,81 +81,101 @@ function Voiceover({ script }) {
   );
 }
 
-function PexelsSearch({ defaultQuery }) {
-  const [query, setQuery] = useState(defaultQuery || '');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+// Reusable grid of playable/downloadable Pexels clips.
+function ClipGrid({ clips }) {
   const [playingId, setPlayingId] = useState(null);
+  if (clips.length === 0) return null;
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {clips.map((v) => (
+        <div key={v.id} className="group relative rounded-lg overflow-hidden bg-[#0A0A0A]">
+          {playingId === v.id ? (
+            <video src={v.downloadUrl} controls autoPlay muted loop className="w-full h-32 object-cover bg-black" />
+          ) : (
+            <>
+              <img src={v.preview} alt="" className="w-full h-32 object-cover" />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
+                <button onClick={() => setPlayingId(v.id)}
+                  className="text-white text-2xl leading-none hover:scale-110 transition-transform">▶</button>
+                <a href={v.downloadUrl} target="_blank" rel="noreferrer" download
+                  className="text-insta text-xs font-bold">⬇ Download</a>
+                <a href={v.pageUrl} target="_blank" rel="noreferrer"
+                  className="text-gray-300 text-[10px]">View on Pexels</a>
+              </div>
+              <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">{v.duration}s</span>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  const run = async (e) => {
-    e?.preventDefault();
-    if (!query.trim()) return;
+// One beat of the video: narration + suggested visual + auto-loaded relevant footage.
+function SegmentFootage({ index, time, narration, visual, search }) {
+  const [query, setQuery] = useState(search || '');
+  const [clips, setClips] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async (q) => {
+    if (!q.trim()) return;
     setLoading(true);
-    setSearched(true);
     try {
-      setResults(await searchVideos(query.trim()));
+      setClips(await searchVideos(q.trim(), 6));
     } catch {
-      setResults([]);
+      setClips([]);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    setQuery(search || '');
+    if (search) load(search);
+    else setLoading(false);
+  }, [search]);
+
   return (
     <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
-      <p className="text-xs font-bold text-insta mb-3">🎥 FIND STOCK FOOTAGE (Pexels)</p>
-      <form onSubmit={run} className="flex gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-insta font-bold text-xs shrink-0">#{index + 1}</span>
+        <span className="text-gray-500 text-xs font-mono">{time}</span>
+      </div>
+      <p className="text-gray-200 text-sm leading-relaxed mb-1">{narration}</p>
+      {visual && <p className="text-gray-500 text-xs mb-3">🎬 {visual}</p>}
+
+      <form onSubmit={(e) => { e.preventDefault(); load(query); }} className="flex gap-2 mb-3">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search free vertical videos..."
-          className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-insta"
+          placeholder="Refine footage search..."
+          className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-insta"
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-insta hover:bg-insta-light disabled:opacity-50 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors"
-        >
+        <button type="submit" disabled={loading}
+          className="bg-insta hover:bg-insta-light disabled:opacity-50 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
           {loading ? '...' : 'Search'}
         </button>
       </form>
 
-      {searched && !loading && results.length === 0 && (
-        <p className="text-gray-600 text-sm text-center py-4">No videos found. Try another search.</p>
+      {loading ? (
+        <p className="text-gray-600 text-xs text-center py-4 animate-pulse">Finding footage…</p>
+      ) : clips.length === 0 ? (
+        <p className="text-gray-600 text-xs text-center py-4">No clips found. Try a simpler search term.</p>
+      ) : (
+        <ClipGrid clips={clips} />
       )}
+    </div>
+  );
+}
 
-      {results.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
-          {results.map((v) => (
-            <div key={v.id} className="group relative rounded-lg overflow-hidden bg-[#0A0A0A]">
-              {playingId === v.id ? (
-                <video
-                  src={v.downloadUrl}
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  className="w-full h-32 object-cover bg-black"
-                />
-              ) : (
-                <>
-                  <img src={v.preview} alt="" className="w-full h-32 object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
-                    <button onClick={() => setPlayingId(v.id)}
-                      className="text-white text-2xl leading-none hover:scale-110 transition-transform">▶</button>
-                    <a href={v.downloadUrl} target="_blank" rel="noreferrer" download
-                      className="text-insta text-xs font-bold">⬇ Download</a>
-                    <a href={v.pageUrl} target="_blank" rel="noreferrer"
-                      className="text-gray-300 text-[10px]">View on Pexels</a>
-                  </div>
-                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">{v.duration}s</span>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+// The per-beat storyboard: each segment shows narration + matched footage.
+function Storyboard({ segments }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-bold text-insta px-1">🎬 STORYBOARD — Footage Matched to Each Beat</p>
+      {segments.map((s, i) => (
+        <SegmentFootage key={`${i}-${s.search}`} index={i} time={s.time} narration={s.narration} visual={s.visual} search={s.search} />
+      ))}
     </div>
   );
 }
@@ -164,12 +194,12 @@ ${script.hook}
 ━━━━━━━━━━━━━━━━━━━━
 📖 VOICEOVER SCRIPT
 ━━━━━━━━━━━━━━━━━━━━
-${script.script}
+${fullScriptText(script.segments)}
 
 ━━━━━━━━━━━━━━━━━━━━
 🎬 VISUALS (Shot by shot)
 ━━━━━━━━━━━━━━━━━━━━
-${script.visuals}
+${visualsText(script.segments)}
 
 ━━━━━━━━━━━━━━━━━━━━
 🎵 MUSIC VIBE
@@ -277,10 +307,9 @@ export default function ScriptPage({ idea, onBack, onMarkPosted, postedTitles = 
       {script && (
         <div className="space-y-3">
           <Section title="🎣 HOOK — First 3 Seconds" content={script.hook} highlight />
-          <Section title="📖 FULL SCRIPT" content={script.script} />
-          <Voiceover script={script.script} />
-          <Section title="🎬 VISUALS" content={script.visuals} />
-          <PexelsSearch defaultQuery={script.searchQuery || idea.title} />
+          <Section title="📖 FULL SCRIPT" content={fullScriptText(script.segments)} />
+          <Voiceover script={fullScriptText(script.segments)} />
+          <Storyboard segments={script.segments || []} />
           <Section title="🎵 MUSIC VIBE" content={script.music} />
           <Section title="✏️ CAPTION" content={script.caption} />
           <Section title="#️⃣ HASHTAGS" content={formatHashtags(script.hashtags)} />
